@@ -10,6 +10,8 @@
 namespace yellowfortyfourcom {
   using namespace std::chrono_literals;
 
+  std::timed_mutex IntervallTimer::mtx;
+
   IntervallTimer::IntervallTimer()
   { 
     std::cout << "IntervallTimer created" << std::endl;    
@@ -17,12 +19,12 @@ namespace yellowfortyfourcom {
   };
 
   void IntervallTimer::run() {
-    std::cout << "timer tread created" << std::endl;
+    std::cout << "timer thread created" << std::endl;
 
     while(1) {
       auto now = TimerUtils::getCurrentTime();
       
-      IntervallTimer::mtx.lock();
+      std::unique_lock lock(IntervallTimer::mtx, 1ms);
       for(auto m = timers.begin(); m < timers.end(); m++){
         if((m->lastCalled + m->period.count()) <= now) {
           m->cbs();
@@ -38,13 +40,13 @@ namespace yellowfortyfourcom {
           }
         }
       }
-      IntervallTimer::mtx.unlock();
+      lock.unlock();
       
       if(timers.size() == 0){
         return;
       }
 
-      std::this_thread::sleep_for(50ms);
+      std::this_thread::sleep_for(1ms);
     }
   }
 
@@ -74,9 +76,8 @@ namespace yellowfortyfourcom {
     
     //  add timer to queue (we need an async thread here to allow timer callbacks to create timer new timers)
     std::thread p([nt]() {
-       IntervallTimer::instance().mtx.lock();
-       IntervallTimer::instance().timers.push_back(nt);
-       IntervallTimer::instance().mtx.unlock();
+      std::unique_lock lock(IntervallTimer::mtx);
+      IntervallTimer::instance().timers.push_back(nt);
     });
     p.detach();
 
@@ -88,7 +89,8 @@ namespace yellowfortyfourcom {
     
     std::thread p([id]() {
       bool idFound = false;
-      IntervallTimer::instance().mtx.lock();
+      //IntervallTimer::instance().mtx.lock();
+      std::unique_lock lock(IntervallTimer::mtx);
       for(auto it = IntervallTimer::instance().timers.begin(); it < IntervallTimer::instance().timers.end(); it++) {
         if(it->timerId == id) {
           it = IntervallTimer::instance().timers.erase(it);
@@ -96,7 +98,7 @@ namespace yellowfortyfourcom {
           break;
         }
       }
-      IntervallTimer::instance().mtx.unlock();
+      //IntervallTimer::instance().mtx.unlock();
       if(!idFound) {
         throw std::runtime_error("Timer not found!");
       }

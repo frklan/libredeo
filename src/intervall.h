@@ -32,7 +32,7 @@ namespace yellowfortyfourcom {
       static intervall_id getNextTimerId() noexcept;
       void run();
       
-      std::mutex mtx;
+      static std::timed_mutex mtx;
       std::unique_ptr<std::thread> timerThread;
       std::vector<Timer> timers;      
   };
