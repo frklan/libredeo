@@ -5,11 +5,13 @@ obj = $(src:.cpp=.o)
 dep = $(obj:.o=.d)
 PREFIX = /usr/local
 
-CXX = g++-7
+ifeq ($(CXX), undefined)
+  CXX = g++-7
+endif
 
 LDFLAGS = 
 
-CXXFLAGS = -std=c++17 -g -Wall  $(sdlheader)
+CXXFLAGS = -std=c++17 -g -Wall 
 
 $(target): $(obj)
 	$(CXX) -o $@ $^ $(LDFLAGS) $(CXXFLAGS)
