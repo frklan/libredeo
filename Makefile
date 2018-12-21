@@ -1,4 +1,5 @@
 target = ht2
+tagetlib = libheliumtimer2.a
 src = $(wildcard *.cpp) \
 			$(wildcard src/*.cpp)
 obj = $(src:.cpp=.o) 
@@ -21,9 +22,13 @@ $(target): $(obj)
 %.d: %.c
 	@$(CXX) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
+lib: $(target)
+	ar -rv $(tagetlib) $(obj) 
+	ar -d $(tagetlib) main.o app.o
+
 .PHONY: clean
 clean:
-	rm -rf $(obj) $(target)*
+	rm -rf $(obj) $(target)* $(tagetlib)
 
 .PHONY: cleandep
 cleandep:
@@ -31,10 +36,14 @@ cleandep:
 
 
 .PHONY: install
-install: $(target)
+install: $(target) lib
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp $< $(DESTDIR)$(PREFIX)/bin/$(target)
+
+	mkdir -p $(DESTDIR)$(PREFIX)/lib
+	cp $(tagetlib) $(DESTDIR)$(PREFIX)/lib/$(tagetlib)
 
 .PHONY: uninstall
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/$(target)
+	rm -f $(DESTDIR)$(PREFIX)/lib/$(tagetlib)
