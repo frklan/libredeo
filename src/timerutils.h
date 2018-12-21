@@ -5,12 +5,9 @@
 #include <thread>
 
 namespace yellowfortyfourcom {
-  class Timer {
+  class TimerUtils {
     public:
-      Timer() = delete;
+      TimerUtils() = delete;
       static std::time_t getCurrentTime();
-
-    private:
-
   };
 }

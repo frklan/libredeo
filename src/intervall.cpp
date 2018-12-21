@@ -3,10 +3,8 @@
 #include <thread>
 #include <functional>
 
-#include "timer.h"
+#include "timerutils.h"
 #include "intervall.h"
-
-
 
 namespace yellowfortyfourcom {
   using namespace std::chrono_literals;
@@ -14,30 +12,34 @@ namespace yellowfortyfourcom {
   IntervallTimer::IntervallTimer()
   { 
     std::cout << "IntervallTimer created" << std::endl;    
-    th = std::make_unique<std::thread>(&IntervallTimer::run, this);
+    timerThread = std::make_unique<std::thread>(&IntervallTimer::run, this);
   };
 
-
   void IntervallTimer::run() {
-    
-    std::cout << "tread created" << std::endl;
+    std::cout << "timer tread created" << std::endl;
 
     while(1) {
-      auto now = Timer::getCurrentTime();
+      auto now = TimerUtils::getCurrentTime();
       
       IntervallTimer::mtx.lock();
-      for(auto m = t.begin(); m < t.end(); m++){
-        if((m->lastCalled + m->period) <= now) {
+      for(auto m = timers.begin(); m < timers.end(); m++){
+        if((m->lastCalled + m->period.count()) <= now) {
           m->cbs();
           m->lastCalled = now;
+          
+          if(m->numCalls == -1) {
+            continue;
+          } else {
           m->numCalls--;
-          if(m->numCalls <= 0){
-            //m = t.erase(m);
+            if(m->numCalls == 0){
+              m = timers.erase(m);
+            }
           }
         }
       }
       IntervallTimer::mtx.unlock();
-      if(t.size() == 0){
+      
+      if(timers.size() == 0){
         return;
       }
 
@@ -46,26 +48,33 @@ namespace yellowfortyfourcom {
   }
 
   IntervallTimer& IntervallTimer::instance() {
-    static IntervallTimer i; 
-    return i;
+    static IntervallTimer intervallTimer;
+    return intervallTimer;
   }
 
 
-  void IntervallTimer::make_intervall(std::time_t  intervall, std::function<void()> cb, int calls) {
-    
-    Timers nt;
+  void IntervallTimer::make_timer(std::chrono::seconds delay, std::function<void()> cb) {
+    make_intervall(delay, cb, 1);
+  }
+
+  /**
+   * Add a new timer to the scheduling queue
+   * The first timer event will be current time + intervall
+   * 
+   * */
+  void IntervallTimer::make_intervall(std::chrono::seconds intervall, std::function<void()> cb, int16_t calls) {
+    Timer nt;
     nt.period = intervall;
     nt.cbs = cb;
     nt.numCalls = calls;
-    nt.lastCalled = Timer::getCurrentTime();
+    nt.lastCalled = TimerUtils::getCurrentTime();
     
-    //  add timer to queue (we need an async thread here to allow timers beeing created in timer events)
+    //  add timer to queue (we need an async thread here to allow timer callbacks to create timer new timers)
     std::thread p([nt]() {
        IntervallTimer::instance().mtx.lock();
-       IntervallTimer::instance().t.push_back(nt);
+       IntervallTimer::instance().timers.push_back(nt);
        IntervallTimer::instance().mtx.unlock();
     });
     p.detach();
   }
-
 }

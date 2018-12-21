@@ -1,7 +1,5 @@
 #include <iostream>
-#include <functional>
-#include <vector>
-#include <mutex>
+#include <chrono>
 #include "app.h"
 #include "intervall.h"
 
@@ -9,17 +7,17 @@ namespace yellowfortyfourcom {
   using namespace std::chrono_literals;
 
   App::App(int argc, char** argv) {
-    //auto at = Timer::getCurrentTime() + 30;
-    //t = std::make_unique<Timer>(at, [](){std::cout << "time's up!" << std::endl;});
 
-    IntervallTimer::make_intervall(5, [](){std::cout << "new timer 1" << std::endl;});
+    IntervallTimer::make_intervall(5s, [](){std::cout << "timer 1" << std::endl;});
     std::this_thread::sleep_for(500ms);
-    IntervallTimer::make_intervall(3, [](){std::cout << "new timer 2" << std::endl;}, 5);
+    IntervallTimer::make_intervall(3s, [](){std::cout << "timer 2" << std::endl;}, 5);
     std::this_thread::sleep_for(750ms);
-    IntervallTimer::make_intervall(7, [](){
+    IntervallTimer::make_intervall(12s, [](){
       std::cout << "new timer 3" << std::endl;
-      IntervallTimer::make_intervall(2, [](){ std::cout << "extra timer" << std::endl; }, 5);
-    });
+      IntervallTimer::make_intervall(2s, [](){ std::cout << "timer created within another timers callback" << std::endl; }, 3);
+    }, 2);
+
+    IntervallTimer::make_intervall(5s, [](){std::cout << "timer running for ever" << std::endl;}, -1);
   
   }
 

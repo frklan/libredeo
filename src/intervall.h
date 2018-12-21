@@ -6,32 +6,29 @@
 #include <vector>
 
 namespace yellowfortyfourcom {
-  using namespace std::chrono_literals;
-
-   struct Timers {
-    std::time_t  period;
+   struct Timer {
+    std::chrono::seconds  period;
     std::time_t lastCalled;
-    int numCalls;
+    int16_t numCalls;
     std::function<void()> cbs;
   };
 
   
   class IntervallTimer {
     public:
-      static void make_intervall(std::time_t  intervall, std::function<void()> callback, int calls = 1);
-      static void wait() { IntervallTimer::instance().th->join(); };
+      static void make_timer(std::chrono::seconds delay, std::function<void()> callback);
+      static void make_intervall(std::chrono::seconds intervall, std::function<void()> callback, int16_t calls = 1);
+      static void wait() { IntervallTimer::instance().timerThread->join(); };
       
     private:
-      static IntervallTimer& instance();
-      IntervallTimer();
+       IntervallTimer();
       ~IntervallTimer() {};
-      std::mutex mtx;
-
-      std::unique_ptr<std::thread> th;
-      std::vector<Timers> t;
-
+      
+      static IntervallTimer& instance();
       void run();
-  };
-    
 
+      std::mutex mtx;
+      std::unique_ptr<std::thread> timerThread;
+      std::vector<Timer> timers;      
+  };
 }

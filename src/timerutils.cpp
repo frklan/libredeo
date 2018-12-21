@@ -3,12 +3,10 @@
 #include <thread>
 #include <functional>
 
-#include "timer.h"
+#include "timerutils.h"
 
 namespace yellowfortyfourcom {
-  using namespace std::chrono_literals;
-
-  std::time_t Timer::getCurrentTime() {
+  std::time_t TimerUtils::getCurrentTime() {
     using sec = std::chrono::duration<int, std::ratio<1>>;
     auto now = std::chrono::time_point_cast<sec>(std::chrono::system_clock::now()).time_since_epoch();
    
