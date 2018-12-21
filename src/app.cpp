@@ -8,7 +8,7 @@ namespace yellowfortyfourcom {
 
   App::App(int argc, char** argv) {
 
-    IntervallTimer::make_intervall(5s, [](){std::cout << "timer 1" << std::endl;});
+    IntervallTimer::make_intervall(1s, [](){std::cout << "timer 1" << std::endl;}, 150);
     std::this_thread::sleep_for(500ms);
     IntervallTimer::make_intervall(3s, [](){std::cout << "timer 2" << std::endl;}, 5);
     std::this_thread::sleep_for(750ms);
@@ -17,8 +17,13 @@ namespace yellowfortyfourcom {
       IntervallTimer::make_intervall(2s, [](){ std::cout << "timer created within another timers callback" << std::endl; }, 3);
     }, 2);
 
-    IntervallTimer::make_intervall(5s, [](){std::cout << "timer running for ever" << std::endl;}, -1);
+    auto id = IntervallTimer::make_intervall(5s, [](){std::cout << "timer running for ever" << std::endl;}, -1);
   
+    IntervallTimer::make_timer(20s, [id]() {
+      std::cout << "canceling timer #" << id << std::endl;
+      IntervallTimer::cancel_timer(id);
+    });
+    
   }
 
   int App::run() {
