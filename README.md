@@ -1,6 +1,6 @@
 # libredeo
 
-Trying to make an intervall timer in C++ is was than I imagined. Taking different use cases into account; many timers firing simultaneous, timers created within another timer event, canceling timers, and so on and so forth. 
+Trying to make an intervall timer in C++ was harder than I imagined. Taking different use cases into account; many timers firing simultaneous, timers created within another timer event, canceling timers, and so on and so forth. 
 
 After many attempts and reworks (just look at the git history), I'm fairly happy with this implementation, it still depends on multiple threads and will most probably segfault if it's pushed it to hard.
 
