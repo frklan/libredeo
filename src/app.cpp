@@ -2,33 +2,36 @@
 #include <chrono>
 #include "app.h"
 #include "intervall.h"
+#include <string>
+#include "timerutils.h"
 
 namespace yellowfortyfourcom {
   using namespace std::chrono_literals;
 
-  App::App(int argc, char** argv) {
-
-    IntervallTimer::make_intervall(1s, [](){std::cout << "timer 1" << std::endl; }, 150);
-    std::this_thread::sleep_for(500ms);
-    IntervallTimer::make_intervall(1s, [](){std::cout << "timer 2" << std::endl;}, 5);
-    std::this_thread::sleep_for(750ms);
-    IntervallTimer::make_intervall(12s, [](){
-      std::cout << "new timer 3" << std::endl;
-      IntervallTimer::make_intervall(2s, [](){ std::cout << "timer created within another timers callback" << std::endl; }, 3);
-    }, 2);
-
-    auto id = IntervallTimer::make_intervall(5s, [](){std::cout << "timer running for ever" << std::endl; }, -1);
+  App::App(int argc, char** argv) { }
   
-    IntervallTimer::make_timer(20s, [id]() {
-      std::cout << "canceling timer #" << id << std::endl;
-      IntervallTimer::cancel_timer(id);
-    });
-    
-  }
-
   int App::run() {
-    // do stuff..
 
+    // Create a timer that fires once every second, repeats 10 times.
+    auto t1 = IntervallTimer::make_intervall(1s, [](){ std::clog << "Timer event\n"; }, 10);
+    std::this_thread::sleep_for(8s);
+    
+    // Cancel any timer by calling IntervallTimer::cancel_timer() with the corresponding timer id
+    IntervallTimer::cancel_timer(t1);
+
+
+    IntervallTimer::make_intervall(1s, [](){ std::clog << "A second timer firing\n"; }, 10);
+    IntervallTimer::make_intervall(1s, [](){ std::clog << "A third timer firing\n"; }, 10);
+
+    // IntervallTimer::make_timer is a short hand for a timer that fires only once.
+    IntervallTimer::make_timer(5s, []() {
+
+      // IntervallTimer::cancel_all_timers() will destry all active timers.
+      IntervallTimer::cancel_all_timers();  
+    });
+
+    // Unless we call IntervallTimer::wait() the application will exit and the timers
+    // will be terminated by the runtime, possibly with a seg fault.
     IntervallTimer::wait();
     return 0;
   }
