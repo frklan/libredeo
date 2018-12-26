@@ -1,5 +1,5 @@
-target = ht2
-tagetlib = libheliumtimer2.a
+target = redeo
+tagetlib = libredeo.a
 src = $(wildcard *.cpp) \
 			$(wildcard src/*.cpp)
 hdr = $(wildcard *.h) \
