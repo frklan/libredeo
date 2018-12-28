@@ -1,5 +1,4 @@
-target = redeo
-tagetlib = libredeo.a
+target = libredeo
 src = $(wildcard *.cpp) \
 			$(wildcard src/*.cpp)
 hdr = $(wildcard *.h) \
@@ -7,53 +6,45 @@ hdr = $(wildcard *.h) \
 obj = $(src:.cpp=.o) 
 dep = $(obj:.o=.d)
 
-ifeq ($(PREFIX), undefined)
+ifndef PREFIX
 	PREFIX = /usr/local
 endif
 
-ifeq ($(CXX), undefined)
+ifndef CXX
   CXX = g++-7
 endif
 
 LDFLAGS = 
-
 CXXFLAGS = -std=c++17 -g -Wall 
-
-$(target): $(obj)
-	$(CXX) -o $@ $^ $(LDFLAGS) $(CXXFLAGS)
 
 -include $(dep)
 
 %.d: %.c
 	@$(CXX) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
-lib: $(target)
-	ar -rv $(tagetlib) $(obj) 
-	ar -d $(tagetlib) main.o app.o
+$(target): $(obj)
+	ar -r $(target).a $(obj)
+
+examples: $(target) 
+	$(MAKE) -C examples/
 
 .PHONY: clean
 clean:
-	rm -rf $(obj) $(target)* $(tagetlib)
+	rm -rf $(obj) $(target).a
 
 .PHONY: cleandep
 cleandep:
 	rm -f $(dep)
 
-
 .PHONY: install
 install: $(target)
-	mkdir -p $(DESTDIR)$(PREFIX)/bin
-	cp $< $(DESTDIR)$(PREFIX)/bin/$(target)
-
-.PHONY: lib-install
-lib-install: $(target) lib
 	mkdir -p $(DESTDIR)$(PREFIX)/lib
-	cp $(tagetlib) $(DESTDIR)$(PREFIX)/lib/$(tagetlib)
+	cp $(target).a $(DESTDIR)$(PREFIX)/lib/$(target).a
 	
-	mkdir -p $(DESTDIR)$(PREFIX)/include
-	cp $(hdr) $(DESTDIR)$(PREFIX)/include
+	mkdir -p $(DESTDIR)$(PREFIX)/include/$(target)
+	cp $(hdr) $(DESTDIR)$(PREFIX)/include/$(target)/
 
 .PHONY: uninstall
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/$(target)
-	rm -f $(DESTDIR)$(PREFIX)/lib/$(tagetlib)
+	rm -f $(DESTDIR)$(PREFIX)/lib/$(target).a
+	rm -rf $(DESTDIR)$(PREFIX)/include/$(target)/

@@ -1,9 +1,9 @@
 #include <iostream>
 #include <chrono>
 #include "app.h"
-#include "intervall.h"
+#include "../src/intervall.h"
 #include <string>
-#include "timerutils.h"
+#include "../src/timerutils.h"
 
 namespace yellowfortyfourcom {
   using namespace std::chrono_literals;

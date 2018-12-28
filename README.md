@@ -9,8 +9,8 @@ After many attempts and reworks (just look at the git history), I'm fairly happy
 Made on macOS, should compile on Linux as well. I'm not interested in Windows so I have no idea if it compiles or not (I guess it will not).
 
 1. Clone the repo
-2. run ```make``` to build the test/demo app or, use ```make lib``` to build the lib 
-3. ```make lib-install``` installs the lib into ```/usr/local/lib```
+2. run ```make examples``` to build the test/demo app or, use ```make``` to build only the lib
+3. ```make install``` installs the lib into ```/usr/local/lib```, use ```make DESTDIR=...```to install it at another location
 
 ## Using
 
@@ -20,9 +20,10 @@ To create a repeating timer we can do like so:
 
 ```C++
 #include <iostream>
-#include <intervall.h>
+#include <libredeo/intervall.h>
 
 using namespace std::chrono_literals;
+using namespace yellowfortyfourcom;
 
 void main(in argc, char* argv[]) {
   auto intervall = 5s;
@@ -43,9 +44,10 @@ A one shot timer can be created with ```IntervallTimer::make_timer(...)```:
 
 ```C++
 #include <iostream>
-#include <intervall.h>
+#include <libredeo/intervall.h>
 
 using namespace std::chrono_literals;
+using namespace yellowfortyfourcom;
 
 void main(in argc, char* argv[]) {
   auto intervall = 5s;
