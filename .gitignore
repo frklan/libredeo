@@ -1,6 +1,9 @@
 *.dSYM
 
 redeo
+libredeo
+examples/intervall/intervall
+examples/oneshot/oneshot
 
 # c++
 # Prerequisites
