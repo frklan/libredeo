@@ -31,6 +31,7 @@ examples: $(target)
 .PHONY: clean
 clean:
 	rm -rf $(obj) $(target).a
+	$(MAKE) clean -C examples/ 
 
 .PHONY: cleandep
 cleandep:

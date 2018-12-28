@@ -25,11 +25,11 @@ To create a repeating timer we can do like so:
 using namespace std::chrono_literals;
 using namespace yellowfortyfourcom;
 
-void main(in argc, char* argv[]) {
+int main(int argc, char* argv[]) {
   auto intervall = 5s;
   auto repeats = 7;
-
-  auto id = IntervallTimer::make_intervall(intervall, [](){ std::clog << "Timer event"; }, repeats);
+  
+  auto id = IntervallTimer::make_intervall(intervall, [](){ std::clog << "Timer event\n"; }, repeats);
   IntervallTimer::wait();
 
   return 0;
@@ -49,10 +49,10 @@ A one shot timer can be created with ```IntervallTimer::make_timer(...)```:
 using namespace std::chrono_literals;
 using namespace yellowfortyfourcom;
 
-void main(in argc, char* argv[]) {
+int main(int argc, char* argv[]) {
   auto intervall = 5s;
 
-  auto id = IntervallTimer::make_timer(intervall, [](){ std::clog << "Timer event"; });
+  auto id = IntervallTimer::make_timer(intervall, [](){ std::clog << "Timer event\n"; });
   IntervallTimer::wait();
 
   return 0;
