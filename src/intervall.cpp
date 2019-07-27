@@ -1,9 +1,6 @@
-#include <iostream>
 #include <chrono>
 #include <thread>
 #include <functional>
-#include <exception>
-#include <future>
 
 #include "timerutils.h"
 #include "intervall.h"

@@ -1,7 +1,4 @@
-#include <iostream>
 #include <chrono>
-#include <thread>
-#include <functional>
 
 #include "timerutils.h"
 

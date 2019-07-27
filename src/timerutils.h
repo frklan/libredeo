@@ -1,8 +1,5 @@
 #pragma once 
-#include <iostream>
-#include <iomanip>
 #include <ctime>
-#include <thread>
 
 namespace yellowfortyfourcom {
   class TimerUtils {

@@ -1,12 +1,9 @@
 #pragma once
-
-#include <iostream>
 #include <chrono>
 #include <thread>
 #include <functional>
 #include <mutex>
 #include <vector>
-#include <future>
 
 namespace yellowfortyfourcom {
   using intervall_id = uint16_t;
